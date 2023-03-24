@@ -19,17 +19,21 @@ namespace SimpleTemplateEngine;
  */
 class Environment
 {
+
+	/** @var string directory of the actual template */
 	private $templateDir;
+	/** @var mixed|string extension of the files in the directory */
 	private $extension;
+	/** @var array variables that will be in the current file */
 	private $variables;
 	
 	/**
 	 * Constructor
 	 * @param string $templateDir 
 	 */
-	public function __construct($templateDir, $extension = '') {
+	public function __construct($templateDir) {
 		$this->templateDir = $templateDir;
-		$this->extension = $extension;
+		$this->extension = '.php';
 		$this->layout = null;
 		$this->variables = array();
 	}
