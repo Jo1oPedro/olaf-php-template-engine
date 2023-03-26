@@ -51,6 +51,7 @@ class Environment
 	
 	/**
 	 * Creates an empty template in this environment
+	 * @return Template
 	 */
 	public function template() {
 		return Template::withEnvironment($this, null);
