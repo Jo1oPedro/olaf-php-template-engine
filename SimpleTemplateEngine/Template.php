@@ -21,7 +21,9 @@ class Template implements \ArrayAccess
 	private $stack = array();
 	protected $blocks = array();
 	protected $extends = null;
-	
+	protected $notAllowedFunctions = ['exec', 'eval', 'system', 'shell_exec', 'passthru'];
+	protected $notAllowedGlobals = ['$_SERVER', '$_SESSION', '$_COOKIE', '$_REQUEST'];
+
 	/**
 	 * Constructs a template from a file path
 	 * If file path is null, constructs an empty template
@@ -44,6 +46,7 @@ class Template implements \ArrayAccess
 			$obj = new self(null);
 		else
 			$obj = new self($environment->getTemplatePath($path));
+			//die(var_dump($obj));
 		$obj->setEnvironment($environment);
 		return $obj;
 	}
@@ -142,7 +145,21 @@ class Template implements \ArrayAccess
 	public function setBlocks(array $blocks) {
 		$this->blocks = $blocks;
 	}
-	
+
+	private function noClosureAllowed($variables) {
+		return array_filter($variables, function ($variable) {
+			return !($variable instanceof \Closure);
+		});
+	}
+
+	private function onlyAllowedFunctions($_file) {
+		file_put_contents($_file, str_replace(
+			array_merge($this->notAllowedFunctions, $this->notAllowedGlobals),
+			[],
+			file_get_contents($_file)
+		));
+	}
+
 	/**
 	 * Renders a template and returns it as a string.
 	 * @param string $templatePath
@@ -154,12 +171,14 @@ class Template implements \ArrayAccess
 			
 			if(!file_exists($_file))
 					throw new \InvalidArgumentException(sprintf("Could not render.  The file %s could not be found", $_file));
-			
+
+			$variables = $this->noClosureAllowed($variables);
+			$this->onlyAllowedFunctions($_file);
 			extract($variables, EXTR_SKIP);
+
 			ob_start();
 			require($_file);
 			$this->content->append(ob_get_clean());
-			
 		}
 		
 		//extending another template
@@ -170,7 +189,6 @@ class Template implements \ArrayAccess
 		}
 		
 		return (string)$this->content;
-		
 	}
 	
 	/**
