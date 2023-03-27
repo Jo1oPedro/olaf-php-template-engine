@@ -22,8 +22,10 @@ class Environment
 
 	/** @var string directory of the actual template */
 	private $templateDir;
+
 	/** @var mixed|string extension of the files in the directory */
 	private $extension;
+
 	/** @var array variables that will be in the current file */
 	private $variables;
 	
@@ -59,7 +61,7 @@ class Environment
 	
 	/**
 	 * Gets the path of the template in this environment
-	 * @param unknown $template
+	 * @param string $template
 	 * @return string
 	 */
 	public function getTemplatePath($template) {
