@@ -120,9 +120,9 @@ class Template implements \ArrayAccess
 	}
 	
 	/**
-	 * Indicates the end of a block, and optionally accepts a filter to apply to the content.
+	 * Indicates the end of a block, and optionally accepts a filter to apply to the content of the actual block.
 	 * Returns the block as a string because of the method __toString.
-	 * @param \Closure $filter function to apply to block contents
+	 * @param \Closure|null $filter function to apply to block contents
 	 * @return Block object
 	 */
 	public function endblock(\Closure $filter = null) {
