@@ -121,7 +121,7 @@ class Template implements \ArrayAccess
 	
 	/**
 	 * Indicates the end of a block, and optionally accepts a filter to apply to the content.
-	 * Returns the block as a string.
+	 * Returns the block as a string because of the method __toString.
 	 * @param \Closure $filter function to apply to block contents
 	 * @return Block object
 	 */
@@ -140,7 +140,26 @@ class Template implements \ArrayAccess
 			$this->blocks[$block->getName()] = $block;
 		return $block;
 	}
-	
+
+	/**
+	 * Indicates the end of a block, and filter to apply to the content.
+	 * As the name indicates it runs throught all blocks applying the filter to the content
+	 * Returns the block as a string because of the magic method __toString.
+	 * @param \Closure $filter function to apply to block contents
+	 * @return Block object
+	 */
+	public function recursiveEndblock(\Closure $filter) {
+		$content = ob_get_clean();
+		//nested blocks
+		foreach($this->stack as &$b)
+			$b->append($filter($content));
+		$block = array_pop($this->stack);
+
+		if(($name = $block->getName()) != null)
+			$this->blocks[$block->getName()] = $block;
+		return $block;
+	}
+
 	/**
 	 * Gets the blocks.
 	 * @return array Block[]
