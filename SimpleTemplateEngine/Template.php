@@ -14,20 +14,35 @@ namespace SimpleTemplateEngine;
  */
 class Template implements \ArrayAccess
 {
-	
+
+	/** @var string|null directory of the actual template */
 	protected $templatePath;
+
+	/** @var Environment enviroment that called this template */
 	protected $environment;
+
+	/** @var Block */
 	protected $content;
+
+	/** @var array */
 	private $stack = array();
+
+	/** @var array */
 	protected $blocks = array();
+
 	protected $extends = null;
+
+	/** @var string[] array of functions that are not allowed to exists in a php file being executed */
 	protected $notAllowedFunctions = ['exec', 'eval', 'system', 'shell_exec', 'passthru'];
+
+	/** @var string[] array of globals that are not allowed to exists int a php file being executed */
 	protected $notAllowedGlobals = ['$_SERVER', '$_SESSION', '$_COOKIE', '$_REQUEST'];
+
 
 	/**
 	 * Constructs a template from a file path
 	 * If file path is null, constructs an empty template
-	 * @param string $path the file path
+	 * @param string $path the file complete path
 	 */
 	public function __construct($path = null) {
 		$this->templatePath = $path;
@@ -38,8 +53,8 @@ class Template implements \ArrayAccess
 	/**
 	 * Creates a template within an environment
 	 * @param Environment $environment
-	 * @param unknown $path
-	 * @return \Plink\Template
+	 * @param string $path
+	 * @return Template
 	 */
 	public static function withEnvironment(Environment $environment, $path) {
 		if($path === null)
