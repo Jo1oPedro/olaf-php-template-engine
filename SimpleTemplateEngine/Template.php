@@ -180,12 +180,24 @@ class Template implements \ArrayAccess
 		$this->blocks = $blocks;
 	}
 
+	/**
+	 * Method responsible for security against closures being passed to views.
+	 * @param array $variables
+	 * @return array
+	 */
 	private function noClosureAllowed($variables) {
 		return array_filter($variables, function ($variable) {
 			return !($variable instanceof \Closure);
 		});
 	}
 
+	/**
+	 * Method responsible for security inside files.
+	 * It allows to keep the content of any file being rendered inside the shape defined
+	 * by the properties: notAllowedFunctions and notAllowedGlobals
+	 * @param string $_file
+	 * @return void
+	 */
 	private function onlyAllowedFunctions($_file) {
 		file_put_contents($_file, str_replace(
 			array_merge($this->notAllowedFunctions, $this->notAllowedGlobals),
