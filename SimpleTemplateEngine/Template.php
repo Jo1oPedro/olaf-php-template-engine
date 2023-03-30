@@ -245,7 +245,7 @@ class Template implements \ArrayAccess
 		if(!file_exists($_file))
 			return;
 
-		if(!$this->component) {}
+		if(!$this->component)
 			return;
 
 		$this->component = false;
