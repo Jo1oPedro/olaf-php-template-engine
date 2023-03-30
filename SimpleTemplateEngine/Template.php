@@ -38,6 +38,7 @@ class Template implements \ArrayAccess
 	/** @var string[] array of globals that are not allowed to exists int a php file being executed */
 	protected $notAllowedGlobals = ['$_SERVER', '$_SESSION', '$_COOKIE', '$_REQUEST'];
 
+	protected $selfId;
 
 	/**
 	 * Constructs a template from a file path
@@ -48,6 +49,7 @@ class Template implements \ArrayAccess
 		$this->templatePath = $path;
 		$this->environment = null;
 		$this->content = new Block();
+		$this->selfId = uniqid();
 	}
 	
 	/**
@@ -165,10 +167,7 @@ class Template implements \ArrayAccess
 	 * @return array Block[]
 	 */
 	public function getBlocks() {
-		if(!$this['content'])
-			$this['content'] = $this->content;
-		else
-			$this['content'] = $this['content'] . $this->content;
+		$this['content'] = (string)$this->content;
 		return $this->blocks;
 	}
 
@@ -236,7 +235,14 @@ class Template implements \ArrayAccess
 		
 		return (string)$this->content;
 	}
-	
+
+	/*public function setTemplate($path)
+	{
+		$_file = $this->environment->getTemplatePath($path);
+		if(!file_exists($path))
+			throw new \InvalidArgumentException('Could not render. The file %s couild not be found', $_file);
+	}*/
+
 	/**
 	 * Sets template environment
 	 * @param Environment $environment
