@@ -40,6 +40,9 @@ class Template implements \ArrayAccess
 
 	protected $selfId;
 
+	private $component = false;
+	public $componentVariables = [];
+
 	/**
 	 * Constructs a template from a file path
 	 * If file path is null, constructs an empty template
@@ -234,6 +237,35 @@ class Template implements \ArrayAccess
 		}
 		
 		return (string)$this->content;
+	}
+
+	public function component($path)
+	{
+		$_file = $this->environment->getTemplatePath($path);
+		if(!file_exists($_file))
+			return;
+
+		if(!$this->component) {}
+			return;
+
+		$this->component = false;
+		ob_start();
+	}
+
+	public function componentVariable($name, $value)
+	{
+		$this->componentVariables += array($name => $value);
+	}
+
+	public function endComponent($_file)
+	{
+		$this->component = true;
+
+		extract($this->componentVariables);
+
+		require($this->environment->getTemplatePath($_file));
+		foreach($this->componentVariables as $key => $componentVariable)
+			unset($this->componentVariables[$key]);
 	}
 
 	/*public function setTemplate($path)
