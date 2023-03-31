@@ -40,8 +40,11 @@ class Template implements \ArrayAccess
 
 	protected $selfId;
 
-	private $component = false;
-	public $componentVariables = [];
+	/** @var Environment[] */
+	private $environmentStack = [];
+
+	/** @var array */
+	private $componentVariables = [];
 
 	/**
 	 * Constructs a template from a file path
@@ -239,17 +242,12 @@ class Template implements \ArrayAccess
 		return (string)$this->content;
 	}
 
-	public function component($path)
+	public function component($dir, $path)
 	{
 		$_file = $this->environment->getTemplatePath($path);
 		if(!file_exists($_file))
 			return;
-
-		if(!$this->component)
-			return;
-
-		$this->component = false;
-		ob_start();
+		array_push($this->environmentStack, ['environment' => new Environment($dir),'path' => $path]);
 	}
 
 	public function componentVariable($name, $value)
@@ -257,23 +255,12 @@ class Template implements \ArrayAccess
 		$this->componentVariables += array($name => $value);
 	}
 
-	public function endComponent($_file)
+	public function endComponent()
 	{
-		$this->component = true;
-
-		extract($this->componentVariables);
-
-		require($this->environment->getTemplatePath($_file));
-		foreach($this->componentVariables as $key => $componentVariable)
-			unset($this->componentVariables[$key]);
+		$environment = array_pop($this->environmentStack);
+		echo $environment['environment']->render($environment['path'], $this->componentVariables);
+		$this->componentVariables = [];
 	}
-
-	/*public function setTemplate($path)
-	{
-		$_file = $this->environment->getTemplatePath($path);
-		if(!file_exists($path))
-			throw new \InvalidArgumentException('Could not render. The file %s couild not be found', $_file);
-	}*/
 
 	/**
 	 * Sets template environment

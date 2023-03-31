@@ -24,11 +24,11 @@
 
 <?php echo $this['content']; ?>
 
-<?php $this->component('dale123') ?>
+<?php $this->component('examples', 'teste') ?>
     <?php $this->componentVariable('arroz', 123) ?>
     <?php $this->componentVariable('bala', 321) ?>
     <?php $this->componentVariable('maca', 213) ?>
-<?php $this->endComponent('teste') ?>
+<?php $this->endComponent() ?>
 
 <h3>Learn more</h3>
 <p>Refer to the README file.</p>
